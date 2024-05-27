@@ -8,12 +8,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
     protected $appends = [
         'format_created_at'
@@ -67,5 +67,15 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn($value) => RoleType::from($value)->name
         );
+    }
+
+    public function getEmailForPasswordReset()
+    {
+        // TODO: Implement getEmailForPasswordReset() method.
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        // TODO: Implement sendPasswordResetNotification() method.
     }
 }

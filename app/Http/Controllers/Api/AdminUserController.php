@@ -66,4 +66,14 @@ class AdminUserController extends Controller
             'message' => 'User Deleted Successfully!!'
         ]);
     }
+    public function changeRole(Request $request, User $user)
+    {
+        $role = (int)$request->role;
+        $user->update([
+            'role' => (int)request('role')
+        ]);
+        return response()->json([
+            'message' => 'User Role Update Successfully!!'
+        ]);
+    }
 }

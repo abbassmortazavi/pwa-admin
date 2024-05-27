@@ -16,6 +16,7 @@ Route::get('/user', function (Request $request) {
 Route::resource('users', AdminUserController::class)->parameters(['id' => 'id']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
+Route::put('user/{user}/change-role', [AdminUserController::class, 'changeRole']);
 
 
 

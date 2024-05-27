@@ -11,6 +11,18 @@ let errors = ref([])
 const editMode = ref(false)
 const toastr = useToastr();
 
+const roles = ref([
+    {
+        name: 'ADMIN',
+        value: 1
+    },
+    {
+        name: 'USER',
+        value: 2
+    }
+]);
+
+
 const form = ref({
     id: '',
     name: '',
@@ -115,7 +127,7 @@ const deleteUser = (user) => {
                     title: "Please Check The Requirements!!!"
                 });
             });
-            setTimeout(()=>{
+            setTimeout(() => {
                 Swal.fire({
                     title: "Deleted!",
                     text: "Your file has been deleted.",
@@ -123,8 +135,26 @@ const deleteUser = (user) => {
                     timer: 2000,
                     timerProgressBar: true,
                 });
-            },2000)
+            }, 2000)
         }
+    });
+}
+
+const changeRole = (user, role) => {
+    axios.put(`/api/user/${user.id}/change-role`, {
+        role: role
+    }).then(res => {
+        console.log(res);
+        toast.fire({
+            icon: "success",
+            title: "User Role Update Successfully!!!"
+        });
+    }).catch(err => {
+        toast.fire({
+            icon: "error",
+            title: "Please Check The Requirements!!!"
+        });
+        errors.value = err.response.data.errors
     });
 }
 </script>
@@ -172,12 +202,20 @@ const deleteUser = (user) => {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr data-widget="expandable-table" aria-expanded="false" v-for="(user, index) in users" :key="user.id">
+                                    <tr data-widget="expandable-table" aria-expanded="false"
+                                        v-for="(user, index) in users" :key="user.id">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ user.name }}</td>
                                         <td>{{ user.email }}</td>
                                         <td>{{ formatDate(user.created_at) }}</td>
-                                        <td>{{ user.role }}</td>
+                                        <td>
+                                            <select class="form-control"
+                                                    @change="changeRole(user, $event.target.value)">
+                                                <option v-for="role in roles" :value=" role.value" :selected="(role.name === user.role)">
+                                                    {{ role.name }}
+                                                </option>
+                                            </select>
+                                        </td>
                                         <td>
                                             <a class="mr-3 text-info" @click.prevent="editUser(user)"><i
                                                 class="fa fa-edit"></i></a>
