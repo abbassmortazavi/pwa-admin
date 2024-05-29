@@ -17,6 +17,7 @@ Route::resource('users', AdminUserController::class)->parameters(['id' => 'id'])
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::put('user/{user}/change-role', [AdminUserController::class, 'changeRole']);
+Route::get('user/search', [AdminUserController::class, 'search']);
 
 
 
@@ -24,5 +25,4 @@ Route::put('user/{user}/change-role', [AdminUserController::class, 'changeRole']
 Route::middleware(['auth:api'])->group(function (){
     Route::get('logout', [AuthController::class, 'logout']);
     Route::post('loginGrant', [AuthController::class, 'loginGrant']);
-
 });

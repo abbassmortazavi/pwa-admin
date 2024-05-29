@@ -1,15 +1,34 @@
 <script setup>
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import axios from "axios";
 import {useToastr} from "../../toastr.js";
 import Swal from "sweetalert2";
 import {formatDate} from "../../helper.js";
+import {debounce} from 'lodash';
 
 
 let users = ref([]);
 let errors = ref([])
 const editMode = ref(false)
 const toastr = useToastr();
+const searchQuery = ref(null);
+
+
+const search = () => {
+    axios.get('/api/user/search', {
+        params: {
+            query: searchQuery.value
+        }
+    }).then(res => {
+        users.value = res.data;
+    }).catch(err => {
+        console.log(err);
+    });
+}
+
+watch(searchQuery, debounce(() => {
+    search();
+}, 700))
 
 const roles = ref([
     {
@@ -21,8 +40,6 @@ const roles = ref([
         value: 2
     }
 ]);
-
-
 const form = ref({
     id: '',
     name: '',
@@ -57,7 +74,6 @@ const createUser = () => {
         errors.value = err.response.data.errors
     })
 }
-
 const addUser = () => {
     editMode.value = false;
     errors.value = [];
@@ -74,7 +90,6 @@ const editUser = (user) => {
     form.value.email = user.email;
     form.value.id = user.id;
 }
-
 const updateUser = () => {
     axios.put('/api/users/' + form.value.id, form.value)
         .then(res => {
@@ -102,7 +117,6 @@ const handelMethod = () => {
         createUser();
     }
 }
-
 const deleteUser = (user) => {
     Swal.fire({
         title: "Are you sure?",
@@ -139,7 +153,6 @@ const deleteUser = (user) => {
         }
     });
 }
-
 const changeRole = (user, role) => {
     axios.put(`/api/user/${user.id}/change-role`, {
         role: role
@@ -186,6 +199,9 @@ const changeRole = (user, role) => {
                             <button @click="addUser" type="button" class="btn btn-primary">
                                 Register User
                             </button>
+                            <div class="float-lg-right">
+                                <input type="text" v-model="searchQuery" name="search" id="search" class="form-control">
+                            </div>
                         </div>
                         <!-- ./card-header -->
                         <div class="card-body">
@@ -201,7 +217,7 @@ const changeRole = (user, role) => {
                                         <th>Options</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody v-if="users.length > 0">
                                     <tr data-widget="expandable-table" aria-expanded="false"
                                         v-for="(user, index) in users" :key="user.id">
                                         <td>{{ index + 1 }}</td>
@@ -211,7 +227,8 @@ const changeRole = (user, role) => {
                                         <td>
                                             <select class="form-control"
                                                     @change="changeRole(user, $event.target.value)">
-                                                <option v-for="role in roles" :value=" role.value" :selected="(role.name === user.role)">
+                                                <option v-for="role in roles" :value=" role.value"
+                                                        :selected="(role.name === user.role)">
                                                     {{ role.name }}
                                                 </option>
                                             </select>
@@ -222,6 +239,11 @@ const changeRole = (user, role) => {
                                             <a class="text-red" @click.prevent="deleteUser(user)"><i
                                                 class="fa fa-trash-alt"></i></a>
                                         </td>
+                                    </tr>
+                                    </tbody>
+                                    <tbody v-else>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-primary"> No Data Found!!</td>
                                     </tr>
                                     </tbody>
                                 </table>

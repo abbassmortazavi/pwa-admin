@@ -66,6 +66,7 @@ class AdminUserController extends Controller
             'message' => 'User Deleted Successfully!!'
         ]);
     }
+
     public function changeRole(Request $request, User $user)
     {
         $role = (int)$request->role;
@@ -75,5 +76,12 @@ class AdminUserController extends Controller
         return response()->json([
             'message' => 'User Role Update Successfully!!'
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $text = $request->input('query');
+        $users = User::query()->where('name', 'like', "%{$text}%")->get();
+        return response()->json($users);
     }
 }
