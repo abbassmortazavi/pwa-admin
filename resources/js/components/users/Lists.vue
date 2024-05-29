@@ -5,9 +5,10 @@ import {useToastr} from "../../toastr.js";
 import Swal from "sweetalert2";
 import {formatDate} from "../../helper.js";
 import {debounce} from 'lodash';
+import {Bootstrap5Pagination} from 'laravel-vue-pagination';
 
 
-let users = ref([]);
+let users = ref({'data': []});
 let errors = ref([])
 const editMode = ref(false)
 const toastr = useToastr();
@@ -20,7 +21,7 @@ const search = () => {
             query: searchQuery.value
         }
     }).then(res => {
-        users.value = res.data;
+        users.value = res.data.data;
     }).catch(err => {
         console.log(err);
     });
@@ -47,10 +48,10 @@ const form = ref({
     password: '',
 })
 onMounted(() => {
-    getUsers()
+    getUsers();
 })
-const getUsers = () => {
-    axios.get('/api/users').then(res => {
+const getUsers = (page = 1) => {
+    axios.get(`/api/users?page=${page}`).then(res => {
         users.value = res.data.data
     }).catch(err => {
         console.log(err)
@@ -217,9 +218,9 @@ const changeRole = (user, role) => {
                                         <th>Options</th>
                                     </tr>
                                     </thead>
-                                    <tbody v-if="users.length > 0">
+                                    <tbody v-if="users.data.length > 0">
                                     <tr data-widget="expandable-table" aria-expanded="false"
-                                        v-for="(user, index) in users" :key="user.id">
+                                        v-for="(user, index) in users.data" :key="user.id">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ user.name }}</td>
                                         <td>{{ user.email }}</td>
@@ -247,6 +248,12 @@ const changeRole = (user, role) => {
                                     </tr>
                                     </tbody>
                                 </table>
+                                <div class="d-flex justify-content-center mt-2">
+                                    <Bootstrap5Pagination
+                                        :data="users"
+                                        @pagination-change-page="getUsers"
+                                    />
+                                </div>
                             </div>
                         </div>
                         <!-- /.card-body -->
