@@ -26,11 +26,9 @@ const search = () => {
         console.log(err);
     });
 }
-
 watch(searchQuery, debounce(() => {
     search();
 }, 700))
-
 const roles = ref([
     {
         name: 'ADMIN',
@@ -46,10 +44,10 @@ const form = ref({
     name: '',
     email: '',
     password: '',
-})
+});
 onMounted(() => {
     getUsers();
-})
+});
 const getUsers = (page = 1) => {
     axios.get(`/api/users?page=${page}`).then(res => {
         users.value = res.data.data
