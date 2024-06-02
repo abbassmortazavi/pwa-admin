@@ -18,6 +18,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::put('user/{user}/change-role', [AdminUserController::class, 'changeRole']);
 Route::get('user/search', [AdminUserController::class, 'search']);
+Route::delete('user/delete-bulk', [AdminUserController::class, 'deleteBulk']);
 
 
 

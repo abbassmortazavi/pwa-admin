@@ -88,4 +88,12 @@ class AdminUserController extends Controller
             'data' => $users,
         ]);
     }
+
+    public function deleteBulk(Request $request)
+    {
+        User::query()->whereIn('id', $request->input('ids'))->delete();
+        return response()->json([
+            'message' => "User Successfully Deleted!!"
+        ]);
+    }
 }

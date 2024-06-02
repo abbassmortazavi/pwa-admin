@@ -14,6 +14,9 @@ const editMode = ref(false)
 const toastr = useToastr();
 const searchQuery = ref(null);
 
+const props = defineProps({
+    user: Object
+});
 
 const search = () => {
     axios.get('/api/user/search', {
@@ -169,6 +172,30 @@ const changeRole = (user, role) => {
         errors.value = err.response.data.errors
     });
 }
+
+let selectedUsers = ref([]);
+const selectUser = (user) => {
+    let index = selectedUsers.value.indexOf(user.id);
+    if (index === -1) {
+        selectedUsers.value.push(user.id);
+    } else {
+        selectedUsers.value.splice(index, 1);
+    }
+    console.log(selectedUsers.value);
+}
+const bulkDelete = () => {
+    axios.delete('/api/user/delete-bulk', {
+        data: {
+            ids: selectedUsers.value
+        }
+    }).then(res => {
+         toastr.success('Users Deleted Successfully!!!');
+         selectedUsers.value = [];
+         getUsers();
+    }).catch(err => {
+        console.log(err);
+    });
+}
 </script>
 
 <template>
@@ -195,9 +222,15 @@ const changeRole = (user, role) => {
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <button @click="addUser" type="button" class="btn btn-primary">
-                                Register User
-                            </button>
+                            <div>
+                                <button @click="addUser" type="button" class="btn btn-primary">
+                                    Register User
+                                </button>
+                                <button v-if="selectedUsers.length > 0" @click="bulkDelete" type="button"
+                                        class="btn btn-danger ml-2">
+                                    Delete Selected User
+                                </button>
+                            </div>
                             <div class="float-lg-right">
                                 <input type="text" v-model="searchQuery" name="search" id="search" class="form-control">
                             </div>
@@ -208,6 +241,7 @@ const changeRole = (user, role) => {
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                     <tr>
+                                        <th><input type="checkbox"></th>
                                         <th>#</th>
                                         <th>User</th>
                                         <th>Email</th>
@@ -219,6 +253,7 @@ const changeRole = (user, role) => {
                                     <tbody v-if="users.data.length > 0">
                                     <tr data-widget="expandable-table" aria-expanded="false"
                                         v-for="(user, index) in users.data" :key="user.id">
+                                        <th><input type="checkbox" @change="selectUser(user)"></th>
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ user.name }}</td>
                                         <td>{{ user.email }}</td>
