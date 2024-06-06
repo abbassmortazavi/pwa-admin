@@ -61,7 +61,6 @@ class AdminUserController extends Controller
      */
     public function destroy(User $user)
     {
-        //video part 12 delete
         $user->delete();
         return response()->json([
             'message' => 'User Deleted Successfully!!'
@@ -91,7 +90,7 @@ class AdminUserController extends Controller
 
     public function deleteBulk(Request $request)
     {
-        //part 20 finished
+        //ta part 23 tamum nashod
         User::query()->whereIn('id', $request->input('ids'))->delete();
         return response()->json([
             'message' => "User Successfully Deleted!!"
