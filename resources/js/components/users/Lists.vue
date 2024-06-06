@@ -54,6 +54,8 @@ onMounted(() => {
 const getUsers = (page = 1) => {
     axios.get(`/api/users?page=${page}`).then(res => {
         users.value = res.data.data
+        selectedUsers.value = [];
+        selectAll.value = false;
     }).catch(err => {
         console.log(err)
     })
@@ -233,12 +235,15 @@ const selectAllUsers = () => {
                         <div class="card-header">
                             <div>
                                 <button @click="addUser" type="button" class="btn btn-primary">
+                                    <i class="fa fa-plus-circle mr-1"></i>
                                     Register User
                                 </button>
                                 <button v-if="selectedUsers.length > 0" @click="bulkDelete" type="button"
                                         class="btn btn-danger ml-2">
+                                    <i class="fa fa-trash-alt ml-1"></i>
                                     Delete Selected User
                                 </button>
+                                <span v-if="selectedUsers.length > 0" class="ml-2">Selected {{ selectedUsers.length }} Users</span>
                             </div>
                             <div class="float-lg-right">
                                 <input type="text" v-model="searchQuery" name="search" id="search" class="form-control">
