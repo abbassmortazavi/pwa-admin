@@ -17,7 +17,7 @@ class AdminUserController extends Controller
      */
     public function index()
     {
-        $users = User::query()->paginate(2);
+        $users = User::query()->paginate(10);
         return response()->json([
             'message' => "User Lists Successfully!",
             'data' => $users,
@@ -82,7 +82,7 @@ class AdminUserController extends Controller
     public function search(Request $request)
     {
         $text = $request->input('query');
-        $users = User::query()->where('name', 'like', "%{$text}%")->paginate(2);
+        $users = User::query()->where('name', 'like', "%{$text}%")->paginate(10);
         return response()->json([
             'message' => "User Lists Successfully!",
             'data' => $users,
@@ -91,6 +91,7 @@ class AdminUserController extends Controller
 
     public function deleteBulk(Request $request)
     {
+        //part 20 finished
         User::query()->whereIn('id', $request->input('ids'))->delete();
         return response()->json([
             'message' => "User Successfully Deleted!!"

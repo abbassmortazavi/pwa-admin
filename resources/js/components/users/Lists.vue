@@ -13,7 +13,7 @@ let errors = ref([])
 const editMode = ref(false)
 const toastr = useToastr();
 const searchQuery = ref(null);
-
+let selectAll = ref(false);
 const props = defineProps({
     user: Object
 });
@@ -189,12 +189,21 @@ const bulkDelete = () => {
             ids: selectedUsers.value
         }
     }).then(res => {
-         toastr.success('Users Deleted Successfully!!!');
-         selectedUsers.value = [];
-         getUsers();
+        toastr.success('Users Deleted Successfully!!!');
+        selectedUsers.value = [];
+        selectAll.value = false;
+        getUsers();
     }).catch(err => {
         console.log(err);
     });
+}
+const selectAllUsers = () => {
+    if (selectAll.value) {
+        selectedUsers.value = users.value.data.map(user => user.id);
+    } else {
+        selectedUsers.value = [];
+    }
+    console.log(selectedUsers.value);
 }
 </script>
 
@@ -241,7 +250,7 @@ const bulkDelete = () => {
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                     <tr>
-                                        <th><input type="checkbox"></th>
+                                        <th><input type="checkbox" v-model="selectAll" @change="selectAllUsers"></th>
                                         <th>#</th>
                                         <th>User</th>
                                         <th>Email</th>
@@ -253,7 +262,7 @@ const bulkDelete = () => {
                                     <tbody v-if="users.data.length > 0">
                                     <tr data-widget="expandable-table" aria-expanded="false"
                                         v-for="(user, index) in users.data" :key="user.id">
-                                        <th><input type="checkbox" @change="selectUser(user)"></th>
+                                        <th><input type="checkbox" :checked="selectAll" @change="selectUser(user)"></th>
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ user.name }}</td>
                                         <td>{{ user.email }}</td>
