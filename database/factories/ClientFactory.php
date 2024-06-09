@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Client>
+ * @extends Factory<Client>
  */
 class ClientFactory extends Factory
 {
@@ -17,7 +18,9 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'first_name'=>$this->faker->name(),
+            'last_name'=>$this->faker->lastName(),
+            'email'=>$this->faker->email,
         ];
     }
 }
