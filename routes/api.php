@@ -20,7 +20,7 @@ Route::put('user/{user}/change-role', [AdminUserController::class, 'changeRole']
 Route::get('user/search', [AdminUserController::class, 'search']);
 Route::delete('user/delete-bulk', [AdminUserController::class, 'deleteBulk']);
 
-
+Route::resource('appointments', 'App\Http\Controllers\Api\AppointmentController');
 
 
 Route::middleware(['auth:api'])->group(function (){
