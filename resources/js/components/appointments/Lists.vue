@@ -5,15 +5,26 @@ import axios from "axios";
 
 let appointments = ref([]);
 
+let appointmentStatus = {
+    'scheduled': 1,
+    'confirmed': 2,
+    'canceled': 3,
+};
+
 onMounted(() => {
     getAppointments();
 });
-const getAppointments = () => {
-    axios('/api/appointments')
-        .then(res => {
-            console.log(res);
-            appointments.value = res.data.data.data;
-        }).catch(err => {
+const getAppointments = (status) => {
+    let params = {};
+    if (status) {
+        params.status = status;
+    }
+    axios('/api/appointments', {
+        params: params
+    }).then(res => {
+        console.log(res);
+        appointments.value = res.data.data.data;
+    }).catch(err => {
         console.log(err);
     });
 }
@@ -50,19 +61,27 @@ const getAppointments = () => {
                             </a>
                         </div>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-secondary">
+                            <button type="button" @click="getAppointments('')" class="btn btn-secondary">
                                 <span class="mr-1">All</span>
                                 <span class="badge badge-pill badge-info">1</span>
                             </button>
 
-                            <button type="button" class="btn btn-default">
+                            <button type="button" @click="getAppointments(appointmentStatus.scheduled)"
+                                    class="btn btn-default">
                                 <span class="mr-1">Scheduled</span>
                                 <span class="badge badge-pill badge-primary">0</span>
                             </button>
 
-                            <button type="button" class="btn btn-default">
-                                <span class="mr-1">Closed</span>
+                            <button type="button" @click="getAppointments(appointmentStatus.confirmed)"
+                                    class="btn btn-default">
+                                <span class="mr-1">Confirmed</span>
                                 <span class="badge badge-pill badge-success">1</span>
+                            </button>
+
+                            <button type="button" class="btn btn-default"
+                                    @click="getAppointments(appointmentStatus.canceled)">
+                                <span class="mr-1">Closed</span>
+                                <span class="badge badge-pill badge-danger">1</span>
                             </button>
                         </div>
                     </div>
@@ -86,7 +105,9 @@ const getAppointments = () => {
                                     <td>{{ appointment.start_time }}</td>
                                     <td>{{ appointment.end_time }}</td>
                                     <td>
-                                        <span class="badge" :class="`badge-${appointment.status.color}`">{{ appointment.status.name }}</span>
+                                        <span class="badge" :class="`badge-${appointment.status.color}`">{{
+                                                appointment.status.name
+                                            }}</span>
                                     </td>
                                     <td>
                                         <a href="">
