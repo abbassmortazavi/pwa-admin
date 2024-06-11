@@ -1,6 +1,6 @@
 <script setup>
 
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import axios from "axios";
 
 let appointments = ref([]);
@@ -9,7 +9,6 @@ let selectedStatus = ref(null);
 
 const getStatus = () => {
     axios('/api/appointment-status').then(res => {
-        console.log(res);
         getAllStatus.value = res.data;
     }).catch(err => {
         console.log(err);
@@ -22,6 +21,9 @@ onMounted(() => {
     getStatus();
     selectedStatus.value = null;
 });
+const appointmentCount = computed(() => {
+    return getAllStatus.value.map(status => status.count).reduce((sum, count) => sum + count, 0);
+})
 const getAppointments = (status) => {
     let params = {};
     if (status === null) {
@@ -29,14 +31,12 @@ const getAppointments = (status) => {
     } else {
         selectedStatus.value = status;
     }
-    console.log(selectedStatus.value);
     if (status) {
         params.status = status;
     }
     axios('/api/appointments', {
         params: params
     }).then(res => {
-        console.log(res);
         appointments.value = res.data.data.data;
     }).catch(err => {
         console.log(err);
@@ -49,7 +49,7 @@ const getAppointments = (status) => {
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Appointments Page</h1>
+                    <h1 class="m-0">Appointments Page </h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -78,7 +78,7 @@ const getAppointments = (status) => {
                             <button type="button" @click="getAppointments(null)" class="btn"
                                     :class="[ selectedStatus === null ? 'btn-secondary' : 'btn-default']">
                                 <span class="mr-1">All</span>
-                                <span class="badge badge-pill badge-info">1</span>
+                                <span class="badge badge-pill badge-info">{{ appointmentCount }}</span>
                             </button>
 
                             <button v-for="status in getAllStatus" type="button"
