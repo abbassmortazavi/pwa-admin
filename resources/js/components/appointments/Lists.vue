@@ -83,10 +83,10 @@ const getAppointments = () => {
                                 <tr v-for="appointment in appointments">
                                     <td>{{ appointment.id }}</td>
                                     <td>{{ appointment.client.full_name }}</td>
-                                    <td>2023-01-27</td>
-                                    <td>05:40 PM</td>
+                                    <td>{{ appointment.start_time }}</td>
+                                    <td>{{ appointment.end_time }}</td>
                                     <td>
-                                        <span class="badge badge-success">closed</span>
+                                        <span class="badge" :class="`badge-${appointment.status.color}`">{{ appointment.status.name }}</span>
                                     </td>
                                     <td>
                                         <a href="">
