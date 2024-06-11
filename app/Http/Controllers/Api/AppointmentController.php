@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AppointmentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\JsonResponse;
@@ -35,5 +36,23 @@ class AppointmentController extends Controller
             'message' => "Appointment Lists Successfully!",
             'data' => $users,
         ]);
+    }
+
+    public function getStatus()
+    {
+        $case = AppointmentStatus::cases();
+       return collect($case)->map(function ($status) {
+            return [
+                'name' => Str::lower($status->name),
+                'color' => $status->color(),
+                'value' => $status->value,
+                'count' => $this->getStatusCount($status->value)
+            ];
+        });
+    }
+
+    private function getStatusCount(int $value)
+    {
+        return Appointment::query()->where('status', $value)->count();
     }
 }
