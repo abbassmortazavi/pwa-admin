@@ -3,6 +3,7 @@ import Appointments from "./components/appointments/Lists.vue";
 import Users from './components/users/Lists.vue'
 import UpdateSetting from './components/settings/UpdateSetting.vue'
 import UpdateProfile from './components/profiles/UpdateProfile.vue'
+import Create from "./components/appointments/create.vue";
 
 export default [
     {
@@ -13,7 +14,12 @@ export default [
     {
         path: '/admin/appointments',
         name: 'admin.appointments',
-        component: Appointments
+        component: Appointments,
+    },
+    {
+        path: '/admin/appointments/create',
+        name: 'admin.appointment.create',
+        component: Create
     },
     {
         path: '/admin/users',

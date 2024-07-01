@@ -67,6 +67,11 @@ class AdminUserController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     * @return JsonResponse
+     */
     public function changeRole(Request $request, User $user)
     {
         $role = (int)$request->role;
@@ -78,6 +83,10 @@ class AdminUserController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function search(Request $request)
     {
         $text = $request->input('query');
@@ -88,9 +97,12 @@ class AdminUserController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function deleteBulk(Request $request)
     {
-        //ta part 23 tamum nashod
         User::query()->whereIn('id', $request->input('ids'))->delete();
         return response()->json([
             'message' => "User Successfully Deleted!!"

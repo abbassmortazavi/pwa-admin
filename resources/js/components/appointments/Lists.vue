@@ -68,11 +68,12 @@ const getAppointments = (status) => {
                 <div class="col-lg-12">
                     <div class="d-flex justify-content-between mb-2">
                         <div>
-                            <a href="">
-                                <button class="btn btn-primary"><i class="fa fa-plus-circle mr-1"></i> Add New
-                                    Appointment
-                                </button>
-                            </a>
+
+                            <router-link to="/admin/appointments/create" class="btn btn-primary"><i
+                                class="fa fa-plus-circle mr-1"></i> Add New
+                                Appointment
+                            </router-link>
+
                         </div>
                         <div class="btn-group">
                             <button type="button" @click="getAppointments(null)" class="btn"
@@ -109,7 +110,7 @@ const getAppointments = (status) => {
                                 <tr v-for="appointment in appointments">
                                     <td>{{ appointment.id }}</td>
                                     <td>{{ appointment.client.full_name }}</td>
-                                    <td>{{ appointment.start_time }}</td>
+                                    <td>{{ appointment.start_date }}</td>
                                     <td>{{ appointment.end_time }}</td>
                                     <td>
                                         <span class="badge" :class="`badge-${appointment.status.color}`">{{
@@ -117,13 +118,8 @@ const getAppointments = (status) => {
                                             }}</span>
                                     </td>
                                     <td>
-                                        <a href="">
-                                            <i class="fa fa-edit mr-2"></i>
-                                        </a>
-
-                                        <a href="">
-                                            <i class="fa fa-trash text-danger"></i>
-                                        </a>
+                                        <a href=""><i class="fa fa-edit mr-2"></i></a>
+                                        <a href=""><i class="fa fa-trash text-danger"></i></a>
                                     </td>
                                 </tr>
                                 </tbody>
