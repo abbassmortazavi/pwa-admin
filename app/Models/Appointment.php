@@ -17,12 +17,12 @@ class Appointment extends Model
         'title',
         'client_id',
         'description',
-        'start_date',
+        'start_time',
         'end_time',
         'status',
     ];
     protected $casts = [
-        'start_date' => 'datetime',
+        'start_time' => 'datetime',
         'end_time' => 'datetime',
         'status' => AppointmentStatus::class
     ];

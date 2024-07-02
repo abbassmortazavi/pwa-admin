@@ -25,7 +25,7 @@ class AppointmentController extends Controller
             ->paginate(50)
             ->through(fn($appointment) => [
                 'id' => $appointment->id,
-                'start_date' => $appointment->start_date->format('Y-m-d h:i A'),
+                'start_time' => $appointment->start_time->format('Y-m-d h:i A'),
                 'end_time' => $appointment->end_time->format('Y-m-d h:i A'),
                 'status' => [
                     'name' => Str::lower($appointment->status->name),
@@ -45,7 +45,7 @@ class AppointmentController extends Controller
     public function getStatus()
     {
         $case = AppointmentStatus::cases();
-       return collect($case)->map(function ($status) {
+        return collect($case)->map(function ($status) {
             return [
                 'name' => Str::lower($status->name),
                 'color' => $status->color(),
@@ -67,6 +67,19 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
-        return Appointment::query()->create($request->all());
+        $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+
+        ]);
+        //till 29 finished
+        return Appointment::query()->create([
+            'title' => $request->title,
+            'client_id' => $request->client_id,
+            'start_time' => now(),
+            'end_time' => now(),
+            'description' => $request->description,
+            'status' => AppointmentStatus::SCHEDULED
+        ]);
     }
 }
