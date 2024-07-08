@@ -25,7 +25,7 @@ class AppointmentController extends Controller
             ->paginate(50)
             ->through(fn($appointment) => [
                 'id' => $appointment->id,
-                'start_time' => $appointment->start_time->format('Y-m-d h:i A'),
+                'start_date' => $appointment->start_date->format('Y-m-d h:i A'),
                 'end_time' => $appointment->end_time->format('Y-m-d h:i A'),
                 'status' => [
                     'name' => Str::lower($appointment->status->name),
@@ -70,14 +70,17 @@ class AppointmentController extends Controller
         $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
-
+            'start_date' => 'required',
+            'end_time' => 'required',
+            'client_id' => 'required',
+        ], [
+            'client_id' => "client is required!!"
         ]);
-        //till 29 finished
         return Appointment::query()->create([
             'title' => $request->title,
             'client_id' => $request->client_id,
-            'start_time' => now(),
-            'end_time' => now(),
+            'start_date' => $request->start_date,
+            'end_time' => $request->end_time,
             'description' => $request->description,
             'status' => AppointmentStatus::SCHEDULED
         ]);

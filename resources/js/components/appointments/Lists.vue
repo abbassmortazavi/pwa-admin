@@ -110,7 +110,7 @@ const getAppointments = (status) => {
                                 <tr v-for="appointment in appointments">
                                     <td>{{ appointment.id }}</td>
                                     <td>{{ appointment.client.full_name }}</td>
-                                    <td>{{ appointment.start_time }}</td>
+                                    <td>{{ appointment.start_date }}</td>
                                     <td>{{ appointment.end_time }}</td>
                                     <td>
                                         <span class="badge" :class="`badge-${appointment.status.color}`">{{
