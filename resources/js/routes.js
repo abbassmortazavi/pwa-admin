@@ -4,6 +4,7 @@ import Users from './components/users/Lists.vue'
 import UpdateSetting from './components/settings/UpdateSetting.vue'
 import UpdateProfile from './components/profiles/UpdateProfile.vue'
 import Create from "./components/appointments/create.vue";
+import Edit from "./components/appointments/Edit.vue";
 
 export default [
     {
@@ -20,6 +21,11 @@ export default [
         path: '/admin/appointments/create',
         name: 'admin.appointment.create',
         component: Create
+    },
+    {
+        path: '/admin/appointments/:id/edit',
+        name: 'admin.appointment.edit',
+        component: Edit
     },
     {
         path: '/admin/users',

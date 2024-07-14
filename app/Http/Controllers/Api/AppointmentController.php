@@ -25,6 +25,9 @@ class AppointmentController extends Controller
             ->paginate(50)
             ->through(fn($appointment) => [
                 'id' => $appointment->id,
+                'title' => $appointment->title,
+                'client_id' => $appointment->client_id,
+                'description' => $appointment->description,
                 'start_date' => $appointment->start_date->format('Y-m-d h:i A'),
                 'end_time' => $appointment->end_time->format('Y-m-d h:i A'),
                 'status' => [
@@ -61,11 +64,35 @@ class AppointmentController extends Controller
      */
     private function getStatusCount(int $value)
     {
-        //az 28 bayad bebinam
         return Appointment::query()->where('status', $value)->count();
     }
 
     public function store(Request $request)
+    {
+        try {
+            $request->validate([
+                'title' => 'required|string',
+                'description' => 'required|string',
+                'start_date' => 'required',
+                'end_time' => 'required',
+                'client_id' => 'required',
+            ], [
+                'client_id' => "client is required!!"
+            ]);
+            return Appointment::query()->create([
+                'title' => $request->title,
+                'client_id' => $request->client_id,
+                'start_date' => $request->start_date,
+                'end_time' => $request->end_time,
+                'description' => $request->description,
+                'status' => AppointmentStatus::SCHEDULED
+            ]);
+        } catch (\Exception $exception) {
+            dd($exception);
+        }
+    }
+
+    public function update(Request $request, Appointment $appointment)
     {
         $request->validate([
             'title' => 'required|string',
@@ -76,13 +103,21 @@ class AppointmentController extends Controller
         ], [
             'client_id' => "client is required!!"
         ]);
-        return Appointment::query()->create([
-            'title' => $request->title,
-            'client_id' => $request->client_id,
-            'start_date' => $request->start_date,
-            'end_time' => $request->end_time,
-            'description' => $request->description,
-            'status' => AppointmentStatus::SCHEDULED
+        $appointment->update([
+            'title'=>$request->title,
+            'description'=>$request->description,
+            'start_date'=>$request->start_date,
+            'end_time'=>$request->end_time,
+            'client_id'=>$request->client_id,
         ]);
+        return response()->json([
+            'message' => "Update Is SuccessFully!!"
+        ]);
+    }
+
+    public function show(Appointment $appointment)
+    {
+        //until 30 watched
+        return response()->json($appointment);
     }
 }

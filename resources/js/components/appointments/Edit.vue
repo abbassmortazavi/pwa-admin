@@ -1,16 +1,19 @@
 <script setup>
 import {onMounted, reactive, ref} from "vue";
 import axios from "axios";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useToastr} from "../../toastr.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/themes/light.css";
 
-const toastr = useToastr();
+//const toastr = useToastr();
 const router = useRouter();
+const route = useRoute()
 
 let errors = ref([]);
 let clients = ref([]);
+let appointmentId = ref(null);
+
 const form = reactive({
     'title': '',
     'client_id': '',
@@ -18,22 +21,22 @@ const form = reactive({
     'end_time': '',
     'description': '',
 })
-const createAppointment = () => {
-    axios.post('/api/appointments', form)
-        .then(res => {
-            toastr.success('Appointment Inserted Successfully!!!');
-            router.push('/admin/appointments')
-        }).catch(err => {
-        errors.value = err.response.data.errors;
-    });
-}
 onMounted(() => {
     flatpickr(".flatpikcr", {
         enableTime: true,
-        dateFormat: "Y-m-d H:i k",
+        dateFormat: "Y-m-d H:i K",
     });
+    getAppointment();
     getClient();
 });
+const getAppointment = () => {
+    axios.get(`/api/appointments/${route.params.id}` )
+        .then(res => {
+            form.value = res.data;
+        }).catch(err => {
+        errors.value = err.response.data.errors;
+    })
+}
 const getClient = () => {
     axios.get('/api/clients')
         .then(res => {
@@ -72,12 +75,12 @@ const getClient = () => {
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form @submit.prevent="createAppointment()">
+                            <form>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="title">Title</label>
-                                            <input type="text" v-model="form.title" class="form-control" id="title"
+                                            <input type="text" v-model="form.value.title" class="form-control" id="title"
                                                    placeholder="Enter Title" :class="{'is-invalid': errors.title}">
                                             <span class="invalid-feedback"
                                                   v-if="errors && errors.title">{{ errors.title[0] }}</span>
@@ -86,9 +89,11 @@ const getClient = () => {
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="client">Client Name</label>
-                                            <select id="client" v-model="form.client_id" class="form-control"
+                                            <select id="client" v-model="form.value.client_id" class="form-control"
                                                     :class="{'is-invalid': errors.client_id}">
-                                                <option :value="client.id" v-for="client in clients">{{ client.first_name }}</option>
+                                                <option :value="client.id" v-for="client in clients">
+                                                    {{ client.first_name }}
+                                                </option>
                                             </select>
                                             <span class="invalid-feedback"
                                                   v-if="errors && errors.client_id">{{ errors.client_id[0] }}</span>

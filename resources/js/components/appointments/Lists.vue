@@ -1,12 +1,36 @@
 <script setup>
 
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import axios from "axios";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/themes/light.css";
+import {useRouter} from "vue-router";
+import {useToastr} from "../../toastr.js";
+
+const toastr = useToastr();
+const router = useRouter();
 
 let appointments = ref([]);
 let getAllStatus = ref([]);
+let errors = ref([]);
+let clients = ref([]);
 let selectedStatus = ref(null);
-
+const form = ref({
+    id: '',
+    title: '',
+    client_id: '',
+    description: '',
+    start_date: '',
+    end_time: '',
+})
+const getClient = () => {
+    axios.get('/api/clients')
+        .then(res => {
+            clients.value = res.data
+        }).catch(err => {
+        console.log(err);
+    })
+}
 const getStatus = () => {
     axios('/api/appointment-status').then(res => {
         getAllStatus.value = res.data;
@@ -20,6 +44,11 @@ onMounted(() => {
     getAppointments();
     getStatus();
     selectedStatus.value = null;
+    getClient();
+    flatpickr(".flatpikcr", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i k",
+    });
 });
 const appointmentCount = computed(() => {
     return getAllStatus.value.map(status => status.count).reduce((sum, count) => sum + count, 0);
@@ -39,6 +68,20 @@ const getAppointments = (status) => {
     }).then(res => {
         appointments.value = res.data.data.data;
     }).catch(err => {
+        console.log(err);
+    });
+}
+const editAppointment = (appointment) => {
+    $('#modal-secondary').modal('show');
+    form.value = appointment;
+}
+const update = () => {
+    axios.put(`/api/appointments/${form.value.id}`, form.value)
+        .then(res => {
+            toastr.success('Appointment Updated Successfully!!!');
+            $('#modal-secondary').modal('hide');
+            getAppointments();
+        }).catch(err => {
         console.log(err);
     });
 }
@@ -118,7 +161,8 @@ const getAppointments = (status) => {
                                             }}</span>
                                     </td>
                                     <td>
-                                        <a href=""><i class="fa fa-edit mr-2"></i></a>
+                                        <a role="button" @click.prevent="editAppointment(appointment)"><i
+                                            class="fa fa-edit mr-2"></i></a>
                                         <a href=""><i class="fa fa-trash text-danger"></i></a>
                                     </td>
                                 </tr>
@@ -129,6 +173,83 @@ const getAppointments = (status) => {
                 </div>
             </div>
         </div>
+
+
+        <div class="modal fade" id="modal-secondary">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Appointment</h4>
+                        <button type="button" class="close text-red" aria-label="Close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form @submit.prevent="update()">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label for="title">Title</label>
+                                    <input type="text" v-model="form.title" class="form-control" id="title"
+                                           placeholder="Enter Title" :class="{'is-invalid': errors.title}">
+                                    <span class="invalid-feedback"
+                                          v-if="errors && errors.title">{{ errors.title[0] }}</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label for="client">Client Name</label>
+                                    <select id="client" v-model="form.client_id" class="form-control"
+                                            :class="{'is-invalid': errors.client_id}">
+                                        <option :value="client.id" v-for="client in clients"
+                                                :key="client.id">
+                                            {{ client.first_name }}
+                                        </option>
+                                    </select>
+                                    <span class="invalid-feedback"
+                                          v-if="errors && errors.client_id">{{ errors.client_id[0] }}</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="date">Start Date</label>
+                                        <input type="date" v-model="form.start_date" class="form-control flatpikcr"
+                                               id="date" :class="{'is-invalid': errors.start_date}">
+                                        <span class="invalid-feedback"
+                                              v-if="errors && errors.start_date">{{ errors.start_date[0] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="time">End Time</label>
+                                        <input type="time" class="form-control flatpikcr" v-model="form.end_time"
+                                               id="time" :class="{'is-invalid': errors.end_time}">
+                                        <span class="invalid-feedback"
+                                              v-if="errors && errors.end_time">{{ errors.end_time[0] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea class="form-control" id="description" v-model="form.description" rows="3"
+                                          placeholder="Enter Description"
+                                          :class="{'is-invalid': errors.description}"></textarea>
+                                <span class="invalid-feedback"
+                                      v-if="errors && errors.description">{{ errors.description[0] }}</span>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-outline-primary" value="Save Data"/>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
     </div>
 
 </template>
