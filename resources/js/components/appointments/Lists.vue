@@ -6,6 +6,7 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/themes/light.css";
 import {useRouter} from "vue-router";
 import {useToastr} from "../../toastr.js";
+import Swal from "sweetalert2";
 
 const toastr = useToastr();
 const router = useRouter();
@@ -83,6 +84,40 @@ const update = () => {
             getAppointments();
         }).catch(err => {
         console.log(err);
+    });
+}
+const deleteAppointment = (appointment) => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to Delete this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`/api/appointments/${appointment.id}`)
+                .then(res => {
+                    toastr.success('Appointment Deleted Successfully!!!');
+                    setTimeout(() => {
+                        getAppointments();
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Your file has been deleted.",
+                            icon: "success",
+                            timer: 2000,
+                            timerProgressBar: true,
+                        });
+                    }, 2000)
+
+                }).catch(err => {
+                toast.fire({
+                    icon: "error",
+                    title: "Please Check The Requirements!!!"
+                });
+            });
+        }
     });
 }
 </script>
@@ -163,7 +198,8 @@ const update = () => {
                                     <td>
                                         <a role="button" @click.prevent="editAppointment(appointment)"><i
                                             class="fa fa-edit mr-2"></i></a>
-                                        <a href=""><i class="fa fa-trash text-danger"></i></a>
+                                        <a role="button" @click="deleteAppointment(appointment)"><i
+                                            class="fa fa-trash text-danger"></i></a>
                                     </td>
                                 </tr>
                                 </tbody>

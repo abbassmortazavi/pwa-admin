@@ -36,6 +36,7 @@ class AppointmentController extends Controller
                 ],
                 'client' => $appointment->client
             ]);
+
         return response()->json([
             'message' => "Appointment Lists Successfully!",
             'data' => $users,
@@ -117,7 +118,13 @@ class AppointmentController extends Controller
 
     public function show(Appointment $appointment)
     {
-        //until 30 watched
         return response()->json($appointment);
+    }
+
+    public function destroy(Appointment $appointment)
+    {
+        //until 32 must watch
+        $appointment->deleteQuietly();
+        return true;
     }
 }
