@@ -7,6 +7,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,9 +16,14 @@ class AdminUserController extends Controller
     /**
      * @return JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::query()->paginate(10);
+        //dd($request->get('query'));
+        $text = $request->input('query');
+        $users = User::query()
+            ->when($text, fn(Builder $query) => $query->where('name', 'like', "%{$text}%"))
+            ->latest()
+            ->paginate(5);
         return response()->json([
             'message' => "User Lists Successfully!",
             'data' => $users,

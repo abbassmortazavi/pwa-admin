@@ -5,8 +5,14 @@ import UpdateSetting from './components/settings/UpdateSetting.vue'
 import UpdateProfile from './components/profiles/UpdateProfile.vue'
 import Create from "./components/appointments/create.vue";
 import Edit from "./components/appointments/Edit.vue";
+import Login from "./components/auth/Login.vue";
 
 export default [
+    {
+        path: '/login',
+        name: 'admin.login',
+        component: Login
+    },
     {
         path: '/admin/dashboard',
         name: 'admin.dashboard',

@@ -17,7 +17,7 @@ Route::resource('users', AdminUserController::class)->parameters(['id' => 'id'])
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::put('user/{user}/change-role', [AdminUserController::class, 'changeRole']);
-Route::get('user/search', [AdminUserController::class, 'search']);
+//Route::get('user/search', [AdminUserController::class, 'search']);
 Route::delete('user/delete-bulk', [AdminUserController::class, 'deleteBulk']);
 
 Route::resource('appointments', 'App\Http\Controllers\Api\AppointmentController');

@@ -18,7 +18,7 @@ const props = defineProps({
     user: Object
 });
 
-const search = () => {
+/*const search = () => {
     axios.get('/api/user/search', {
         params: {
             query: searchQuery.value
@@ -28,9 +28,10 @@ const search = () => {
     }).catch(err => {
         console.log(err);
     });
-}
+}*/
 watch(searchQuery, debounce(() => {
-    search();
+    //search();
+    getUsers();
 }, 700))
 const roles = ref([
     {
@@ -52,7 +53,11 @@ onMounted(() => {
     getUsers();
 });
 const getUsers = (page = 1) => {
-    axios.get(`/api/users?page=${page}`).then(res => {
+    axios.get(`/api/users?page=${page}`, {
+        params: {
+            query: searchQuery.value
+        }
+    }).then(res => {
         users.value = res.data.data
         selectedUsers.value = [];
         selectAll.value = false;

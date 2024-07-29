@@ -8,6 +8,7 @@ import 'sweetalert2/dist/sweetalert2.css';
 import {createApp} from 'vue/dist/vue.esm-bundler.js';
 import {createRouter, createWebHistory} from "vue-router";
 import routes from "./routes.js";
+import Login from "./components/auth/Login.vue";
 
 const app = createApp({})
 const router = createRouter({
@@ -30,5 +31,5 @@ const toast = Swal.mixin({
 window.toast = toast;
 
 app.use(router)
-
+app.component('Login', Login);
 app.mount('#app')
