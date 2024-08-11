@@ -10,10 +10,9 @@ Route::get('/', function () {
         'email' => 'abbassmortazavi011@gmail.com',
         'password' => bcrypt('12345678'),
     ]);*/
-    $user = User::query()->where('id', '=', 25)->first();
-    $token = $user->createToken('Token Name')->accessToken;
+   // $user = User::query()->where('id', '=', 25)->first();
+    //$token = $user->createToken('Token Name')->accessToken;
 
-    dd($token);
     return view('welcome');
 });
 //
@@ -21,4 +20,4 @@ Route::get('/', function () {
 //    return view('dashboard');
 //});
 
-Route::get('{view}', ApplicationController::class)->where('view', '(.*)');
+Route::get('{view}', ApplicationController::class)->where('view', '(.*)')->middleware('auth');
