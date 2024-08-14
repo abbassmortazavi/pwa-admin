@@ -23,6 +23,7 @@ Route::delete('user/delete-bulk', [AdminUserController::class, 'deleteBulk']);
 Route::resource('appointments', 'App\Http\Controllers\Api\AppointmentController');
 Route::get('appointment-status', [AppointmentController::class, 'getStatus']);
 Route::get('clients', [ClientController::class, 'clients']);
+Route::get('appointments-status', [AppointmentController::class, 'appointmentStatusCount']);
 
 
 Route::middleware(['auth:api'])->group(function () {

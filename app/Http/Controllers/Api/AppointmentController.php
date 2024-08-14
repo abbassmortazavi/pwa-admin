@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\AppointmentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -105,11 +106,11 @@ class AppointmentController extends Controller
             'client_id' => "client is required!!"
         ]);
         $appointment->update([
-            'title'=>$request->title,
-            'description'=>$request->description,
-            'start_date'=>$request->start_date,
-            'end_time'=>$request->end_time,
-            'client_id'=>$request->client_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'start_date' => $request->start_date,
+            'end_time' => $request->end_time,
+            'client_id' => $request->client_id,
         ]);
         return response()->json([
             'message' => "Update Is SuccessFully!!"
@@ -123,8 +124,21 @@ class AppointmentController extends Controller
 
     public function destroy(Appointment $appointment)
     {
-        //until 32 must watch
         $appointment->deleteQuietly();
         return true;
+    }
+
+    public function appointmentStatusCount(Request $request)
+    {
+        //until 36=> 8:19
+        $count = Appointment::query()
+            ->when($request->status === '1', function ($query) {
+                $query->where('status', '=', AppointmentStatus::SCHEDULED);
+            })->when($request->status === '3', function ($query) {
+                $query->where('status', '=', AppointmentStatus::CANCELED);
+            })->when($request->status === '2', function ($query) {
+                $query->where('status', '=', AppointmentStatus::CONFIRMED);
+            })->count();
+        return response()->json($count);
     }
 }
